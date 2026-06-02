@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GUZO GO Dashboard</title><style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+padding:20px;
+}
+
+.header{
+background:#16a34a;
+color:white;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+}
+
+.header h1{
+font-size:28px;
+}
+
+.table-box{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+overflow:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#16a34a;
+color:white;
+padding:12px;
+text-align:left;
+}
+
+td{
+padding:12px;
+border-bottom:1px solid #eee;
+}
+
+.status{
+padding:6px 12px;
+border-radius:20px;
+color:white;
+font-size:14px;
+font-weight:bold;
+}
+
+.approved{
+background:#16a34a;
+}
+
+.pending{
+background:#f59e0b;
+}
+
+.rejected{
+background:#dc2626;
+}
+
+.refresh{
+margin-bottom:15px;
+padding:12px 18px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+
+</style></head>
+<body><div class="header">
+<h1>🌍 GUZO GO Admin Dashboard</h1>
+<p>All Visa Applications</p>
+</div><div class="table-box"><button class="refresh" onclick="loadApplicants()">
+Refresh List
+</button><table><thead>
+<tr>
+<th>Name</th>
+<th>Passport</th>
+<th>Country</th>
+<th>Visa Type</th>
+<th>Status</th>
+</tr>
+</thead><tbody id="tableBody">
+</tbody></table></div><script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyBTAsl13IVaetUhf-2TiYDxl-qWXeBl4w0",
+authDomain: "guzo-go-fc6ad.firebaseapp.com",
+projectId: "guzo-go-fc6ad",
+storageBucket: "guzo-go-fc6ad.firebasestorage.app",
+messagingSenderId: "403496798385",
+appId: "1:403496798385:web:2700fcd232230741113a90"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.loadApplicants = async function(){
+
+const table =
+document.getElementById("tableBody");
+
+table.innerHTML = "";
+
+const snapshot =
+await getDocs(collection(db,"applicants"));
+
+snapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+let statusClass = "pending";
+
+if(data.status==="Approved"){
+statusClass="approved";
+}
+
+if(data.status==="Rejected"){
+statusClass="rejected";
+}
+
+table.innerHTML += `
+<tr>
+<td>${data.fullName || ""}</td>
+<td>${data.passportNumber || ""}</td>
+<td>${data.country || ""}</td>
+<td>${data.visaType || ""}</td>
+<td>
+<span class="status ${statusClass}">
+${data.status || "Pending"}
+</span>
+</td>
+</tr>
+`;
+
+});
+
+}
+
+loadApplicants();
+
+</script></body>
+  </html>
