@@ -156,6 +156,7 @@ onkeyup="loadApplicants()">
 Refresh
 </button><table><thead>
 <tr>
+<th>Photo</th>
 <th>Name</th>
 <th>Passport</th>
 <th>Country</th>
@@ -233,7 +234,15 @@ statusClass="rejected";
 
 table.innerHTML += `
 <tr>
-
+<td>
+<img
+src="${data.photoUrl || 'https://via.placeholder.com/50'}"
+style="
+width:50px;
+height:50px;
+border-radius:50%;
+object-fit:cover;">
+</td>
 <td>${data.fullName || ""}</td>
 
 <td>${data.passportNumber || ""}</td>
@@ -253,6 +262,9 @@ ${data.status || "Pending"}
 <button
 class="approveBtn"
 onclick="approveApplicant('${item.id}')">
+<button onclick="viewApplicant('${item.id}')">
+👁
+</button>
 ✅
 </button>
 
@@ -317,7 +329,34 @@ loadApplicants();
 }
 
 }
+window.viewApplicant = async function(id){
 
+const snapshot =
+await getDocs(collection(db,"applicants"));
+
+snapshot.forEach((item)=>{
+
+if(item.id===id){
+
+const d = item.data();
+
+alert(
+"Name: " + (d.fullName||"") + "\n\n" +
+"Passport: " + (d.passportNumber||"") + "\n\n" +
+"Nationality: " + (d.nationality||"") + "\n\n" +
+"DOB: " + (d.dob||"") + "\n\n" +
+"Gender: " + (d.gender||"") + "\n\n" +
+"Country: " + (d.country||"") + "\n\n" +
+"Visa Type: " + (d.visaType||"") + "\n\n" +
+"Phone: " + (d.phone||"") + "\n\n" +
+"Email: " + (d.email||"")
+);
+
+}
+
+});
+
+  }
 loadApplicants();
 
 </script></body>
