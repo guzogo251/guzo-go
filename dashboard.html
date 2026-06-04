@@ -368,31 +368,62 @@ loadApplicants();
 
 window.viewApplicant = async function(id){
 
-const snapshot = await getDocs(collection(db,"applicants"));
+const snapshot =
+await getDocs(collection(db,"applicants"));
 
 snapshot.forEach((item)=>{
 
-if(item.id === id){
+if(item.id===id){
 
 const d = item.data();
 
-alert(
-"Full Name: " + (d.fullName || "") + "\n\n" +
-"Passport: " + (d.passportNumber || "") + "\n\n" +
-"Nationality: " + (d.nationality || "") + "\n\n" +
-"Date Of Birth: " + (d.dob || "") + "\n\n" +
-"Gender: " + (d.gender || "") + "\n\n" +
-"Country: " + (d.country || "") + "\n\n" +
-"Visa Type: " + (d.visaType || "") + "\n\n" +
-"Status: " + (d.status || "")
-);
+document.getElementById("modalContent").innerHTML = `
+
+<div style="text-align:center">
+
+<img
+src="${d.photoUrl || 'https://via.placeholder.com/120'}"
+style="
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:15px;">
+
+<h2>${d.fullName || ""}</h2>
+
+<p><b>Passport:</b> ${d.passportNumber || ""}</p>
+
+<p><b>Application ID:</b> ${d.applicationId || ""}</p>
+
+<p><b>Nationality:</b> ${d.nationality || ""}</p>
+
+<p><b>DOB:</b> ${d.dob || ""}</p>
+
+<p><b>Gender:</b> ${d.gender || ""}</p>
+
+<p><b>Country:</b> ${d.country || ""}</p>
+
+<p><b>Visa Type:</b> ${d.visaType || ""}</p>
+
+<p><b>Status:</b> ${d.status || "Pending"}</p>
+
+</div>
+
+`;
+
+document.getElementById("viewModal").style.display="block";
 
 }
 
 });
 
-}
+  }
+  window.closeModal = function(){
 
+document.getElementById("viewModal").style.display="none";
+
+  }
 window.editApplicant = async function(id){
 
 const snapshot = await getDocs(collection(db,"applicants"));
@@ -482,7 +513,51 @@ loadApplicants();
 }
 
 window.viewApplicant = async function(id){
+window.editApplicant = async function(id){
 
+const snapshot =
+await getDocs(collection(db,"applicants"));
+
+snapshot.forEach((item)=>{
+
+if(item.id===id){
+
+const d = item.data();
+
+const fullName =
+prompt("Full Name", d.fullName || "");
+
+if(fullName===null) return;
+
+const country =
+prompt("Destination Country", d.country || "");
+
+if(country===null) return;
+
+const visaType =
+prompt("Visa Type", d.visaType || "");
+
+if(visaType===null) return;
+
+updateDoc(
+doc(db,"applicants",id),
+{
+fullName: fullName,
+country: country,
+visaType: visaType
+}
+).then(()=>{
+
+alert("Applicant Updated Successfully");
+loadApplicants();
+
+});
+
+}
+
+});
+
+  }
 const snapshot =
 await getDocs(collection(db,"applicants"));
 
@@ -512,5 +587,45 @@ alert(
 
 loadApplicants();
 </script>
+  <div id="viewModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.7);
+z-index:9999;">
+
+<div
+style="
+background:white;
+width:90%;
+max-width:500px;
+margin:50px auto;
+padding:25px;
+border-radius:20px;
+position:relative;">
+
+<button
+onclick="closeModal()"
+style="
+position:absolute;
+right:15px;
+top:15px;
+background:red;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:8px;">
+✖
+</button>
+
+<div id="modalContent"></div>
+
+</div>
+
+  </div>
 </body>
 </html>
