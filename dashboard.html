@@ -439,7 +439,78 @@ loadApplicants();
 }
 
 loadApplicants();
+window.approveApplicant = async function(id){
 
+await updateDoc(
+doc(db,"applicants",id),
+{
+status:"Approved"
+}
+);
+
+loadApplicants();
+
+}
+
+window.rejectApplicant = async function(id){
+
+await updateDoc(
+doc(db,"applicants",id),
+{
+status:"Rejected"
+}
+);
+
+loadApplicants();
+
+}
+
+window.deleteApplicant = async function(id){
+
+const ok = confirm(
+"Are you sure you want to delete this applicant?"
+);
+
+if(!ok) return;
+
+await deleteDoc(
+doc(db,"applicants",id)
+);
+
+loadApplicants();
+
+}
+
+window.viewApplicant = async function(id){
+
+const snapshot =
+await getDocs(collection(db,"applicants"));
+
+snapshot.forEach((item)=>{
+
+if(item.id===id){
+
+const d = item.data();
+
+alert(
+"Full Name: " + (d.fullName || "") + "\n\n" +
+"Passport: " + (d.passportNumber || "") + "\n\n" +
+"Application ID: " + (d.applicationId || "") + "\n\n" +
+"Nationality: " + (d.nationality || "") + "\n\n" +
+"DOB: " + (d.dob || "") + "\n\n" +
+"Gender: " + (d.gender || "") + "\n\n" +
+"Country: " + (d.country || "") + "\n\n" +
+"Visa Type: " + (d.visaType || "") + "\n\n" +
+"Status: " + (d.status || "Pending")
+);
+
+}
+
+});
+
+}
+
+loadApplicants();
 </script>
 </body>
 </html>
